@@ -5,9 +5,10 @@ Sub Main()
     On Error GoTo ImportFailed
     ImportIR_OOR
     ImportMaster
+    ImportGaps
     On Error GoTo 0
-    
-    
+
+
     CleanOpenOrders
 
     GoTo ExitSub
@@ -15,8 +16,8 @@ Sub Main()
 
 ImportFailed:
     Select Case Err.Number
-        Case 53:
-            MsgBox Err.Description & " could not be found."
+        Case 53, 18:
+            MsgBox Err.Description
 
         Case Else:
             Err.Raise Err.Number

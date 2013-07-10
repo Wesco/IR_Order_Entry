@@ -16,7 +16,7 @@ Sub ImportMaster()
         ActiveWorkbook.Close
     Else
         Application.DisplayAlerts = PrevDispAlert
-        Err.Raise 53, Description:="IR Master"
+        Err.Raise 53, Description:="IR Master could not be found."
     End If
 
     Application.DisplayAlerts = PrevDispAlert
@@ -26,9 +26,9 @@ Sub ImportIR_OOR()
     Const Path As String = "\\7938-HP02\Shared\IR order entry\IR macro for all plant order entry\IR Open Purchase Orders\"
     Dim FileName As String
     Dim PrevDispAlert As Boolean
-    
+
     PrevDispAlert = Application.DisplayAlerts
-    FileName = "Open POs" & Format(Date, "yyyy-mm-dd") & ".xlsx"
+    FileName = "Open POs " & Format(Date, "yyyy-mm-dd") & ".xlsx"
     Application.DisplayAlerts = False
 
     If FileExists(Path & FileName) Then
@@ -37,8 +37,8 @@ Sub ImportIR_OOR()
         ActiveWorkbook.Close
     Else
         Application.DisplayAlerts = PrevDispAlert
-        Err.Raise 53, Description:="Open POs " & Format(Date, "yyyy-mm-dd") & ".xlsx"
+        Err.Raise 53, Description:="Open POs " & Format(Date, "yyyy-mm-dd") & ".xlsx could not be found."
     End If
-    
+
     Application.DisplayAlerts = PrevDispAlert
 End Sub

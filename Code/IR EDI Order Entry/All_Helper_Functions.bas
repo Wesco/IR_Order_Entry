@@ -219,7 +219,7 @@ Sub ImportGaps()
             Range("A2").AutoFill Destination:=Range(Cells(2, 1), Cells(iRows, 1))
             Range(Cells(2, 1), Cells(iRows, 1)).Value = Range(Cells(2, 1), Cells(iRows, 1)).Value
         Else
-            Err.Raise 18, "ImportGaps", "Import canceled"
+            Err.Raise 18, "ImportGaps", "Import canceled."
         End If
     Else
         Err.Raise 53, "ImportGaps", "Gaps could not be found."
