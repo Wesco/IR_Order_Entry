@@ -8,6 +8,7 @@ Sub Main()
     ImportGaps
     On Error GoTo 0
 
+    
 
     CleanOpenOrders
 
@@ -25,4 +26,14 @@ ImportFailed:
     GoTo ExitSub
 
 ExitSub:
+End Sub
+
+Sub Clean()
+    Dim w As Worksheet
+
+    For Each w In ThisWorkbook.Sheets
+        If w.Name <> "Macro" Then
+            w.Cells.Delete
+        End If
+    Next
 End Sub
