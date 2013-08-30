@@ -232,16 +232,18 @@ CREATE_GAPS:
     ThisWorkbook.Sheets.Add After:=Sheets(ThisWorkbook.Sheets.Count)
     ActiveSheet.Name = "Gaps"
     Resume
-    
+
 End Sub
 
 '---------------------------------------------------------------------------------------
 ' Proc : FilterSheet
 ' Date : 1/29/2013
-' Desc : Remove all rows that do not match a specified string
+' Desc : Filter the current worksheet
 '---------------------------------------------------------------------------------------
-Sub FilterSheet(sFilter As String, ColNum As Integer, Match As Boolean)
-    Dim Rng As Range
+Sub FilterSheet(Criteria As String, ColNum As Integer, Optional Match As Boolean = True, Optional ContainsHeaders As Boolean = True)
+    Dim TotalRows As Long
+    Dim TotalCols As Long
+    Dim StartRow As Long
     Dim aRng() As Variant
     Dim aHeaders As Variant
     Dim StartTime As Double
@@ -249,44 +251,50 @@ Sub FilterSheet(sFilter As String, ColNum As Integer, Match As Boolean)
     Dim i As Long
     Dim y As Long
 
-    StartTime = Timer
-    Set Rng = ActiveSheet.UsedRange
+    If ContainsHeaders = False Then
+        StartRow = 1
+    Else
+        StartRow = 2
+    End If
+
+    TotalRows = ActiveSheet.UsedRange.Rows.Count
+    TotalCols = ActiveSheet.UsedRange.Columns.Count
     aHeaders = Range(Cells(1, 1), Cells(1, ActiveSheet.UsedRange.Columns.Count))
-    iCounter = 1
 
-    Do While iCounter <= Rng.Rows.Count
-        If Match = True Then
-            If Rng(iCounter, ColNum).Value = sFilter Then
-                i = i + 1
-            End If
-        Else
-            If Rng(iCounter, ColNum).Value <> sFilter Then
-                i = i + 1
-            End If
-        End If
+    For iCounter = StartRow To TotalRows
+        Select Case Match
+            Case True:
+                If Rng(iCounter, ColNum).Value = Criteria Then
+                    i = i + 1
+                End If
+            Case False:
+                If Rng(iCounter, ColNum).Value <> Criteria Then
+                    i = i + 1
+                End If
+        End Select
         iCounter = iCounter + 1
-    Loop
+    Next
 
-    ReDim aRng(1 To i, 1 To Rng.Columns.Count) As Variant
+    ReDim aRng(1 To i, 1 To TotalCols) As Variant
 
-    iCounter = 1
     i = 0
-    Do While iCounter <= Rng.Rows.Count
-        If Match = True Then
-            If Rng(iCounter, ColNum).Value = sFilter Then
-                i = i + 1
-                For y = 1 To Rng.Columns.Count
-                    aRng(i, y) = Rng(iCounter, y)
-                Next
-            End If
-        Else
-            If Rng(iCounter, ColNum).Value <> sFilter Then
-                i = i + 1
-                For y = 1 To Rng.Columns.Count
-                    aRng(i, y) = Rng(iCounter, y)
-                Next
-            End If
-        End If
+    For iCounter = StartRow To TotalRows
+        Select Case Match
+            Case True:
+                If Rng(iCounter, ColNum).Value = Criteria Then
+                    i = i + 1
+                    For y = 1 To TotalCols
+                        aRng(i, y) = Rng(iCounter, y)
+                    Next
+                End If
+            Case False:
+                If Rng(iCounter, ColNum).Value <> Criteria Then
+                    i = i + 1
+                    For y = 1 To TotalCols
+                        aRng(i, y) = Rng(iCounter, y)
+                    Next
+                End If
+        End Select
         iCounter = iCounter + 1
     Loop
 
@@ -294,11 +302,6 @@ Sub FilterSheet(sFilter As String, ColNum As Integer, Match As Boolean)
     Range(Cells(1, 1), Cells(UBound(aRng, 1), UBound(aRng, 2))) = aRng
     Rows(1).Insert
     Range(Cells(1, 1), Cells(1, UBound(aHeaders, 2))) = aHeaders
-    FillInfo "FilterSheet", _
-             "", _
-             "Filter: " & sFilter & vbCrLf & "Col: " & Columns(ColNum).Address(False, False) & vbCrLf & "Match: " & Match, _
-             Timer - StartTime, _
-             "Complete"
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -622,7 +625,7 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
 
             Case ReportType.BO:
                 FileName = "3615 " & Format(Date, "m-dd-yy") & " BACKORDERS.xlsx"
-                
+
             Case ReportType.ALL
                 FileName = "3615 " & Format(Date, "m-dd-yy") & " ALLORDERS.xlsx"
         End Select
@@ -731,7 +734,7 @@ Function FindColumn(ByVal HeaderText As String, Optional SearchArea As Range) As
             Exit For
         End If
     Next
-    
+
     If FindColumn = 0 Then Err.Raise CustErr.COLNOTFOUND, "FindColumn", HeaderText
 End Function
 

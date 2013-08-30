@@ -8,7 +8,6 @@ Sub Main()
     ImportGaps
     On Error GoTo 0
 
-    
 
     CleanOpenOrders
 
