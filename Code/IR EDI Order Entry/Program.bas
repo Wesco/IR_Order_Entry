@@ -3,26 +3,43 @@ Option Explicit
 
 Sub Main()
     On Error GoTo Main_Error
-    
+
     ImportMaster
-    
+
     MsgBox "Select the 'Supplier Open Order Report'"
     UserImportFile Sheets("OOR").Range("A1")
+
     FormatOOR
-    
+
     GetPO
     CreateOrder
-    
+
+    Sheets("Macro").Select
+    Range("G7").Select
+
     On Error GoTo 0
     Exit Sub
 
 Main_Error:
-    If Err.Number = 18 And Err.Source = "UserImportFile" Then
+    If Err.Number = 18 And Err.Source = "UserImportFile" Or Err.Source <> "" Then
         MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure " & Err.Source
     Else
         MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Main of Module Program"
     End If
 
+End Sub
+
+Sub SendOrder()
+    On Error GoTo SendOrder_Error
+
+    ExportOrder
+
+    On Error GoTo 0
+    Exit Sub
+
+SendOrder_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SendOrder of Module Program"
 End Sub
 
 Sub Clean()

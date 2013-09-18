@@ -52,7 +52,7 @@ Sub GetPO()
         Next
 
     Else
-        Err.Raise CustErr.PONOTFOUND, "GetPO", "PO# entry canceled."
+        Err.Raise CustErr.PONOTFOUND, "GetPO", "PO# entry canceled"
     End If
 End Sub
 
