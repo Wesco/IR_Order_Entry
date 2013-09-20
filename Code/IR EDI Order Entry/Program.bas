@@ -4,6 +4,9 @@ Option Explicit
 Sub Main()
     On Error GoTo Main_Error
 
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+
     ImportMaster
 
     MsgBox "Select the 'Supplier Open Order Report'"
@@ -16,6 +19,9 @@ Sub Main()
 
     Sheets("Macro").Select
     Range("G7").Select
+
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
 
     On Error GoTo 0
     Exit Sub
@@ -32,7 +38,13 @@ End Sub
 Sub SendOrder()
     On Error GoTo SendOrder_Error
 
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+
     ExportOrder
+
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
 
     On Error GoTo 0
     Exit Sub
