@@ -19,13 +19,13 @@ Sub GetPO()
 
         Sheets("PO").Select
         POData = ActiveSheet.UsedRange
-        TotalRows = UBound(POData, 2)
-        TotalCols = UBound(POData)
+        TotalRows = UBound(POData)
+        TotalCols = UBound(POData, 2)
         Cells.Delete
 
         'Column Order:
-        '    1             2                3                   4                     5               6
-        'PO Number    Line Number    IR Part Number    IR Part Description    Quantity Ordered    PO Price
+        '    1             2                3                   4                     5                    6              7
+        'PO Number    Line Number    IR Part Number    IR Part Description    Quantity Ordered      Actual Due Date    PO Price
 
         'EDI Column Order:
         '    1          2     3       4       5    6       7        8      9      10      11        12     13     14
@@ -43,7 +43,9 @@ Sub GetPO()
                     k = 10
                 ElseIf i = 5 Then   'Quantity Ordered = QTY
                     k = 5
-                ElseIf i = 6 Then   'PO Price = UNIT_PRICE
+                ElseIf i = 6 Then   'Actual Due Date = SHIP_DATE
+                    k = 11
+                ElseIf i = 7 Then   'PO Price = UNIT_PRICE
                     k = 7
                 End If
 
@@ -78,8 +80,7 @@ Sub CreateOrder()
 
     'UOM
     Range("F1").Value = "UOM"
-    Range("F2:F" & TotalRows).Formula = "=IFERROR(VLOOKUP(I2,Master!A:D,4,FALSE),"""")"
-    Range("F2:F" & TotalRows).Value = Range("F2:F" & TotalRows).Value
+    Range("F2:F" & TotalRows).Value = "E"
 
     'UNIT_PRICE
     Range("G2:G" & TotalRows).NumberFormat = "$#,##0.00"
@@ -95,26 +96,28 @@ Sub CreateOrder()
         .Replace ",", ""
         .Replace """", ""
         .Replace ";", ""
+        .Replace "/", ""
     End With
-    
+
     'SHIP_DATE
     Range("K1").Value = "SHIP_DATE"
-    
+    For i = 2 To TotalRows
+        Cells(i, 11).Value = CalcShpDt(CDate(Cells(i, 11).Value))
+    Next
+
     'SHIPTO
     Range("L1").Value = "SHIPTO"
     Range("L2:L" & TotalRows).Value = "2"
 
     'NOTE1
     Range("M1").Value = "NOTE1"
-    'Range("M2:M" & TotalRows).Formula = "=""LN: "" & D2 & ""   PART: "" & I2"
-    'Range("M2:M" & TotalRows).Value = Range("M2:M" & TotalRows).Value
-    
+
     'NOTE2
     Range("N1").Value = "NOTE2"
 
     'Master Price
     Range("O1").Value = "Master Price"
-    Range("O2:O" & TotalRows).Formula = "=IFERROR(VLOOKUP(I2,Master!A:H,8,FALSE),"""")"
+    Range("O2:O" & TotalRows).Formula = "=IFERROR(VLOOKUP(I2,Master!A:H,8,FALSE),0)"
     Range("O2:O" & TotalRows).NumberFormat = "$#,##0.00"
     Range("O2:O" & TotalRows).Value = Range("O2:O" & TotalRows).Value
 
@@ -139,6 +142,7 @@ Sub CreateOrder()
     'Highlight pricing discrepancies
     For i = 2 To TotalRows
         If Cells(i, 7).Value <> Cells(i, 15).Value Then
+            Cells(i, 7).Value = "0"
             Range(Cells(i, 1), Cells(i, 15)).Interior.Color = rgbRed
         End If
     Next
@@ -166,9 +170,27 @@ Sub FormatOOR()
            Cells(1, i).Value <> "IR Part Number" And _
            Cells(1, i).Value <> "IR Part Description" And _
            Cells(1, i).Value <> "Quantity Ordered" And _
+           Cells(1, i).Value <> "Actual Due Date" And _
            Cells(1, i).Value <> "PO Price" Then
             Columns(i).Delete
         End If
     Next
 End Sub
 
+Function CalcShpDt(dt As Date) As Date
+    Dim strDay As String
+    Dim Result As Date
+    Dim offset As Integer
+
+    strDay = Format(dt, "ddd")
+
+    If strDay = "Mon" Or strDay = "Tue" Then
+        offset = 4
+    Else
+        offset = 2
+    End If
+
+    Result = dt - offset
+
+    CalcShpDt = Result
+End Function
