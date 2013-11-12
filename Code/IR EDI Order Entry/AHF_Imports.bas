@@ -90,8 +90,10 @@ Sub UserImportFile(DestRange As Range, Optional DelFile As Boolean = False, Opti
     Dim File As String              'Full path to user selected file
     Dim FileDate As String          'Date the file was last modified
     Dim OldDispAlert As Boolean     'Original state of Application.DisplayAlerts
-
+    Dim OldScrnUpdat As Boolean     'Original state of Application.ScreenUpdating
+    
     OldDispAlert = Application.DisplayAlerts
+    Application.ScreenUpdating = True
     File = Application.GetOpenFilename(FileFilter)
 
     Application.DisplayAlerts = False

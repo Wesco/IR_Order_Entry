@@ -13,10 +13,12 @@ Sub Main()
     UserImportFile Sheets("OOR").Range("A1")
 
     FormatOOR
-
     GetPO
     CreateOrder
+    ExportOrder
 
+    MsgBox "Complete!"
+    
     Sheets("Macro").Select
     Range("G7").Select
 
@@ -33,25 +35,6 @@ Main_Error:
         MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Main of Module Program"
     End If
 
-End Sub
-
-Sub SendOrder()
-    On Error GoTo SendOrder_Error
-
-    Application.ScreenUpdating = False
-    Application.DisplayAlerts = False
-
-    ExportOrder
-
-    Application.ScreenUpdating = True
-    Application.DisplayAlerts = True
-
-    On Error GoTo 0
-    Exit Sub
-
-SendOrder_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SendOrder of Module Program"
 End Sub
 
 Sub Clean()

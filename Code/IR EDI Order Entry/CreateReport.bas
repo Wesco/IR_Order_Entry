@@ -101,9 +101,6 @@ Sub CreateOrder()
 
     'SHIP_DATE
     Range("K1").Value = "SHIP_DATE"
-    For i = 2 To TotalRows
-        Cells(i, 11).Value = CalcShpDt(CDate(Cells(i, 11).Value))
-    Next
 
     'SHIPTO
     Range("L1").Value = "SHIPTO"
@@ -156,25 +153,33 @@ Sub FormatOOR()
     Sheets("OOR").Select
 
     'Remove report header
-    Range("1:3").Delete
-
-    'Remove report footer
-    Range(Rows(1).End(xlDown).Row & ":" & ActiveSheet.UsedRange.Rows.Count).Delete
+    Rows(1).Delete
 
     TotalRows = ActiveSheet.UsedRange.Rows.Count
     TotalCols = ActiveSheet.UsedRange.Columns.Count
 
+    'Remove all unneeded columns
     For i = TotalCols To 1 Step -1
         If Cells(1, i).Value <> "PO Number" And _
            Cells(1, i).Value <> "Line Number" And _
            Cells(1, i).Value <> "IR Part Number" And _
            Cells(1, i).Value <> "IR Part Description" And _
-           Cells(1, i).Value <> "Quantity Ordered" And _
-           Cells(1, i).Value <> "Actual Due Date" And _
+           Cells(1, i).Value <> "Ordered Quantity" And _
+           Cells(1, i).Value <> "Actual PO Due Date" And _
            Cells(1, i).Value <> "PO Price" Then
             Columns(i).Delete
         End If
     Next
+    
+    'Unmerg PO number column
+    Range(Cells(2, 1), Cells(TotalRows, 1)).UnMerge
+    
+    For i = 2 To TotalRows
+        If Cells(i, 1).Value = "" Then
+            Cells(i, 1).Value = Cells(i - 1, 1).Value
+        End If
+    Next
+    
 End Sub
 
 Function CalcShpDt(dt As Date) As Date
