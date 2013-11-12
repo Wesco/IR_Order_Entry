@@ -88,7 +88,7 @@ Sub CreateOrder()
 
     'SIM
     Range("H1").Value = "SIM"
-    Range("H2:H" & TotalRows).Formula = "=IFERROR(VLOOKUP(I2,Master!A:C,3,FALSE),"""")"
+    Range("H2:H" & TotalRows).Formula = "=IFERROR(VLOOKUP(VLOOKUP(I2,Master!A:C,3,FALSE),Gaps!A:A,1,FALSE),"""")"
     Range("H2:H" & TotalRows).Value = Range("H2:H" & TotalRows).Value
 
     'DESC
