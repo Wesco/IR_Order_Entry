@@ -6,7 +6,8 @@ Sub Main()
 
     Application.ScreenUpdating = False
     Application.DisplayAlerts = False
-
+    
+    ImportGaps
     ImportMaster
 
     MsgBox "Select the 'Supplier Open Order Report'"
