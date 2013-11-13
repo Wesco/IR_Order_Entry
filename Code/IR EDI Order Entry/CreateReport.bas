@@ -83,12 +83,11 @@ Sub CreateOrder()
     Range("F2:F" & TotalRows).Value = "E"
 
     'UNIT_PRICE
-    Range("G2:G" & TotalRows).NumberFormat = "$#,##0.00"
     Range("G2:G" & TotalRows).Value = Range("G2:G" & TotalRows).Value
 
     'SIM
     Range("H1").Value = "SIM"
-    Range("H2:H" & TotalRows).Formula = "=IFERROR(VLOOKUP(VLOOKUP(I2,Master!A:C,3,FALSE),Gaps!A:A,1,FALSE),"""")"
+    Range("H2:H" & TotalRows).Formula = "=IFERROR(VLOOKUP(I2,Master!A:C,3,FALSE),"""")"
     Range("H2:H" & TotalRows).Value = Range("H2:H" & TotalRows).Value
 
     'DESC
@@ -115,7 +114,6 @@ Sub CreateOrder()
     'Master Price
     Range("O1").Value = "Master Price"
     Range("O2:O" & TotalRows).Formula = "=IFERROR(VLOOKUP(I2,Master!A:H,8,FALSE),0)"
-    Range("O2:O" & TotalRows).NumberFormat = "$#,##0.00"
     Range("O2:O" & TotalRows).Value = Range("O2:O" & TotalRows).Value
 
     'Make all fonts and borders match

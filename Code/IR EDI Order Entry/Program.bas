@@ -21,7 +21,7 @@ Sub Main()
     MsgBox "Complete!"
     
     Sheets("Macro").Select
-    Range("G7").Select
+    Range("C7").Select
 
     Application.ScreenUpdating = True
     Application.DisplayAlerts = True
