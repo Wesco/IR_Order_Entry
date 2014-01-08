@@ -80,14 +80,14 @@ Sub CreateOrder()
 
     'UOM
     Range("F1").Value = "UOM"
-    Range("F2:F" & TotalRows).Value = "=IFERROR(VLOOKUP(H2,Gaps!A:AJ,36,FALSE),"""")"
+    Range("F2:F" & TotalRows).Value = "E"
 
     'UNIT_PRICE
     Range("G2:G" & TotalRows).Value = Range("G2:G" & TotalRows).Value
 
     'SIM
     Range("H1").Value = "SIM"
-    Range("H2:H" & TotalRows).Formula = "=IFERROR(VLOOKUP(VLOOKUP(I2,Master!A:C,3,FALSE),Gaps!A:A,1,FALSE),"""")"
+    Range("H2:H" & TotalRows).Formula = "=IFERROR(VLOOKUP(I2,Master!A:C,3,FALSE),"""")"
     Range("H2:H" & TotalRows).Value = Range("H2:H" & TotalRows).Value
 
     'DESC
@@ -100,9 +100,6 @@ Sub CreateOrder()
 
     'SHIP_DATE
     Range("K1").Value = "SHIP_DATE"
-    For i = 2 To TotalRows
-        Cells(i, 11).Value = Format(CalcShpDt(Cells(i, 11).Value), "mm/dd/yyyy")
-    Next
 
     'SHIPTO
     Range("L1").Value = "SHIPTO"
@@ -140,6 +137,7 @@ Sub CreateOrder()
     'Highlight pricing discrepancies
     For i = 2 To TotalRows
         If Cells(i, 7).Value <> Cells(i, 15).Value Then
+            Cells(i, 7).Value = "0"
             Range(Cells(i, 1), Cells(i, 15)).Interior.Color = rgbRed
         End If
     Next
@@ -170,36 +168,32 @@ Sub FormatOOR()
             Columns(i).Delete
         End If
     Next
-
+    
     'Unmerg PO number column
     Range(Cells(2, 1), Cells(TotalRows, 1)).UnMerge
-
+    
     For i = 2 To TotalRows
         If Cells(i, 1).Value = "" Then
             Cells(i, 1).Value = Cells(i - 1, 1).Value
         End If
     Next
-
+    
 End Sub
 
-Private Function CalcShpDt(dt As Date) As Date
+Function CalcShpDt(dt As Date) As Date
     Dim strDay As String
     Dim Result As Date
     Dim offset As Integer
 
-    'Get the day of the week (Mon, Tue, Wd)
     strDay = Format(dt, "ddd")
 
-    'If the day is Monday or Tuesday set the offset to 4 otherwise set it to 2
-    'The goal is to get three business days behind the date, 4 days are subtracted
-    'on Monday and Tuesday to account for the weekened
     If strDay = "Mon" Or strDay = "Tue" Then
         offset = 4
     Else
         offset = 2
     End If
 
-    'Subtract the offset number of days from the date and return the result
     Result = dt - offset
+
     CalcShpDt = Result
 End Function

@@ -7,23 +7,23 @@ Option Explicit
 ' Desc  : Imports gaps to the workbook containing this macro.
 ' Ex    : ImportGaps
 '---------------------------------------------------------------------------------------
-Sub ImportGaps(Optional Destination As Range, Optional SimsAsText As Boolean = True)
+Sub ImportGaps()
     Dim sPath As String     'Gaps file path
     Dim sName As String     'Gaps Sheet Name
     Dim iCounter As Long    'Counter to decrement the date
     Dim iRows As Long       'Total number of rows
     Dim dt As Date          'Date for gaps file name and path
     Dim Result As VbMsgBoxResult    'Yes/No to proceed with old gaps file if current one isn't found
+    Dim Gaps As Worksheet           'The sheet named gaps if it exists, else this = nothing
+    Dim StartTime As Double         'The time this function was started
     Dim FileFound As Boolean        'Indicates whether or not gaps was found
 
-
+    StartTime = Timer
     FileFound = False
 
     'This error is bypassed so you can determine whether or not the sheet exists
     On Error GoTo CREATE_GAPS
-    If TypeName(Destination) = "Nothing" Then
-        Set Destination = ThisWorkbook.Sheets("Gaps").Range("A1")
-    End If
+    Set Gaps = ThisWorkbook.Sheets("Gaps")
     On Error GoTo 0
 
     Application.DisplayAlerts = False
@@ -49,27 +49,21 @@ Sub ImportGaps(Optional Destination As Range, Optional SimsAsText As Boolean = T
         End If
 
         If Result <> vbNo Then
-            ThisWorkbook.Activate
-            Sheets(Destination.Parent.Name).Select
-            If Range("A1").Value <> "" Then
-                Cells.Delete
+            If ThisWorkbook.Sheets("Gaps").Range("A1").Value <> "" Then
+                Gaps.Cells.Delete
             End If
 
             Workbooks.Open sPath & sName
-            ActiveSheet.UsedRange.Copy Destination:=Destination
+            ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Gaps").Range("A1")
             ActiveWorkbook.Close
 
+            Sheets("Gaps").Select
             iRows = ActiveSheet.UsedRange.Rows.Count
-            Columns(1).Insert
+            Columns(1).EntireColumn.Insert
             Range("A1").Value = "SIM"
-
-            If SimsAsText = True Then
-                Range("A2:A" & iRows).Formula = "=""=""&""""""""&C2&D2&"""""""""
-            Else
-                Range("A2:A" & iRows).Formula = "=C2&D2"
-            End If
-            
-            Range("A2:A" & iRows).Value = Range("A2:A" & iRows).Value
+            Range("A2").Formula = "=""=""&""""""""&C2&D2&"""""""""
+            Range("A2").AutoFill Destination:=Range(Cells(2, 1), Cells(iRows, 1))
+            Range(Cells(2, 1), Cells(iRows, 1)).Value = Range(Cells(2, 1), Cells(iRows, 1)).Value
         Else
             Err.Raise 18, "ImportGaps", "Import canceled"
         End If
@@ -96,8 +90,10 @@ Sub UserImportFile(DestRange As Range, Optional DelFile As Boolean = False, Opti
     Dim File As String              'Full path to user selected file
     Dim FileDate As String          'Date the file was last modified
     Dim OldDispAlert As Boolean     'Original state of Application.DisplayAlerts
-
+    Dim OldScrnUpdat As Boolean     'Original state of Application.ScreenUpdating
+    
     OldDispAlert = Application.DisplayAlerts
+    Application.ScreenUpdating = True
     File = Application.GetOpenFilename(FileFilter)
 
     Application.DisplayAlerts = False
@@ -120,7 +116,7 @@ Sub UserImportFile(DestRange As Range, Optional DelFile As Boolean = False, Opti
             DeleteFile File
         End If
     Else
-        Err.Raise 18
+        Err.Raise 18, "UserImportFile", "User canceled import."
     End If
     Application.DisplayAlerts = OldDispAlert
 End Sub
