@@ -1,5 +1,7 @@
 Attribute VB_Name = "Program"
 Option Explicit
+Public Const VersionNumber As String = "1.0.0"
+Public Const RepositoryName As String = "IR_Order_Entry"
 
 Sub Main()
     On Error GoTo Main_Error

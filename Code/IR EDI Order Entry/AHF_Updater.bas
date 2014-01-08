@@ -84,33 +84,37 @@ End Sub
 ' Date : 4/24/2013
 ' Desc : Checks to see if the macro is up to date
 '---------------------------------------------------------------------------------------
-Sub CheckForUpdates(URL As String, Optional RepoName As String = "")
+Sub CheckForUpdates(RepoName As String, LocalVer As String)
     Dim Ver As Variant
-    Dim LocalVer As Variant
-    Dim Path As String
-    Dim LocalPath As String
-    Dim FileNum As Integer
     Dim RegEx As Variant
+    Dim Result As Integer
+    Dim URL As String
 
     Set RegEx = CreateObject("VBScript.RegExp")
+    URL = "https://raw.github.com/Wesco/" & RepoName & "/master/Version.txt"
+
+    'Try to get the contents of the text file
     Ver = DownloadTextFile(URL)
-    Ver = Ver & vbCrLf
     Ver = Replace(Ver, vbLf, "")
     Ver = Replace(Ver, vbCr, "")
-    RegEx.Pattern = "^[0-9]+\.[0-9]+\.[0-9]+$"
-    Path = GetWorkbookPath & "Version.txt"
-    FileNum = FreeFile
 
-    Open Path For Input As #FileNum
-    Line Input #FileNum, LocalVer
-    Close FileNum
+    'Expression to verify the data retrieved is a version number
+    RegEx.Pattern = "^[0-9]+\.[0-9]+\.[0-9]+$"
 
     If RegEx.Test(Ver) Then
         If Not Ver = LocalVer Then
-            MsgBox Prompt:="An update is available. Please close the macro and get the latest version!", Title:="Update Available"
-            If Not RepoName = "" Then
-                Shell "C:\Program Files\Internet Explorer\iexplore.exe http://github.com/Wesco/" & RepoName & "/releases/", vbMaximizedFocus
+            Result = MsgBox("An update is available. Would you like to download the latest version now?", vbYesNo, "Update Available")
+
+            Shell "C:\Program Files\Internet Explorer\iexplore.exe http://github.com/Wesco/" & RepoName & "/releases/", vbMaximizedFocus
+            If Result = vbYes Then
+                ThisWorkbook.Saved = True
+                If Workbooks.Count = 1 Then
+                    Application.Quit
+                Else
+                    ThisWorkbook.Close
+                End If
             End If
+
         End If
     End If
 End Sub

@@ -11,7 +11,6 @@ Sub ExportOrder()
     FilePath = "\\idxexchange-new\EDI\Spreadsheet_PO\"
     FileName = Range("A2").Value
     
-    
     'Remove "Master Price"
     Columns("O:O").Delete
     
