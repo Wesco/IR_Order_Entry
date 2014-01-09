@@ -3,25 +3,28 @@ Option Explicit
 Public Const VersionNumber As String = "1.0.1"
 Public Const RepositoryName As String = "IR_Order_Entry"
 
+Enum CustErr
+    PONOTFOUND = 50001
+End Enum
+
 Sub Main()
     On Error GoTo Main_Error
 
     Application.ScreenUpdating = False
     Application.DisplayAlerts = False
-    
-    ImportGaps
-    ImportMaster
+
+    ImportGaps      'SIMs stored as text
+    ImportMaster    'SIMs and Parts stored as text
 
     MsgBox "Select the 'Supplier Open Order Report'"
     UserImportFile Sheets("OOR").Range("A1")
-
     FormatOOR
     GetPO
     CreateOrder
     ExportOrder
 
     MsgBox "Complete!"
-    
+
     Sheets("Macro").Select
     Range("C7").Select
 
@@ -46,10 +49,7 @@ Sub Clean()
     Dim s As Worksheet
 
     PrevAlrt = Application.DisplayAlerts
-    PrevScrn = Application.ScreenUpdating
-
     Application.DisplayAlerts = False
-    Application.ScreenUpdating = False
 
     ThisWorkbook.Activate
 
@@ -65,6 +65,5 @@ Sub Clean()
     Sheets("Macro").Select
     Range("C7").Select
 
-    Application.ScreenUpdating = PrevScrn
     Application.DisplayAlerts = PrevAlrt
 End Sub

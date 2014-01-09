@@ -18,41 +18,44 @@ Sub GetPO()
         ActiveSheet.UsedRange.Copy Destination:=Sheets("PO").Range("A1")
 
         Sheets("PO").Select
-        POData = ActiveSheet.UsedRange
-        TotalRows = UBound(POData)
-        TotalCols = UBound(POData, 2)
-        Cells.Delete
+        If Range("A2").Value <> "" Then
+            POData = ActiveSheet.UsedRange
+            TotalRows = UBound(POData)
+            TotalCols = UBound(POData, 2)
+            Cells.Delete
 
-        'Column Order:
-        '    1             2                3                   4                     5                    6              7
-        'PO Number    Line Number    IR Part Number    IR Part Description    Quantity Ordered      Actual Due Date    PO Price
+            'Column Order:
+            '    1             2                3                   4                     5                    6              7
+            'PO Number    Line Number    IR Part Number    IR Part Description    Quantity Ordered      Actual Due Date    PO Price
 
-        'EDI Column Order:
-        '    1          2     3       4       5    6       7        8      9      10      11        12     13     14
-        'PO_NUMBER , Branch, DPC, CUST_LINE, QTY, UOM, UNIT_PRICE, SIM, PART_NO, DESC, SHIP_DATE, SHIPTO, NOTE1, NOTE2
+            'EDI Column Order:
+            '    1          2     3       4       5    6       7        8      9      10      11        12     13     14
+            'PO_NUMBER , Branch, DPC, CUST_LINE, QTY, UOM, UNIT_PRICE, SIM, PART_NO, DESC, SHIP_DATE, SHIPTO, NOTE1, NOTE2
 
-        For i = 1 To TotalCols
-            For j = 1 To TotalRows
-                If i = 1 Then       'PO Number = PO_NUMBER
-                    k = 1
-                ElseIf i = 2 Then   'Line Number = CUST_LINE
-                    k = 4
-                ElseIf i = 3 Then   'IR Part Number = PART_NO
-                    k = 9
-                ElseIf i = 4 Then   'IR Part Description = DESC
-                    k = 10
-                ElseIf i = 5 Then   'Quantity Ordered = QTY
-                    k = 5
-                ElseIf i = 6 Then   'Actual Due Date = SHIP_DATE
-                    k = 11
-                ElseIf i = 7 Then   'PO Price = UNIT_PRICE
-                    k = 7
-                End If
+            For i = 1 To TotalCols
+                For j = 1 To TotalRows
+                    If i = 1 Then       'PO Number = PO_NUMBER
+                        k = 1
+                    ElseIf i = 2 Then   'Line Number = CUST_LINE
+                        k = 4
+                    ElseIf i = 3 Then   'IR Part Number = PART_NO
+                        k = 9
+                    ElseIf i = 4 Then   'IR Part Description = DESC
+                        k = 10
+                    ElseIf i = 5 Then   'Quantity Ordered = QTY
+                        k = 5
+                    ElseIf i = 6 Then   'Actual Due Date = SHIP_DATE
+                        k = 11
+                    ElseIf i = 7 Then   'PO Price = UNIT_PRICE
+                        k = 7
+                    End If
 
-                Cells(j, k).Value = POData(j, i)
+                    Cells(j, k).Value = POData(j, i)
+                Next
             Next
-        Next
-
+        Else
+            Err.Raise CustErr.PONOTFOUND, "GetPO", "The PO you entered was not on the report."
+        End If
     Else
         Err.Raise CustErr.PONOTFOUND, "GetPO", "PO# entry canceled"
     End If
