@@ -21,6 +21,8 @@ Sub Main()
     FormatOOR
     GetPO
     CreateOrder
+    FormatRemoved
+    ExportRemoved
     ExportOrder
 
     MsgBox "Complete!"
@@ -40,6 +42,8 @@ Main_Error:
     Else
         MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Main of Module Program"
     End If
+
+    Clean
 
 End Sub
 
