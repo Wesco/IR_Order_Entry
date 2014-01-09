@@ -7,6 +7,16 @@ Private Enum Ver
     Patch
 End Enum
 
+Private Declare Function ShellExecute _
+                          Lib "shell32.dll" Alias "ShellExecuteA" ( _
+                              ByVal hWnd As Long, _
+                              ByVal Operation As String, _
+                              ByVal FileName As String, _
+                              Optional ByVal Parameters As String, _
+                              Optional ByVal Directory As String, _
+                              Optional ByVal WindowStyle As Long = vbMaximizedFocus _
+                            ) As Long
+
 '---------------------------------------------------------------------------------------
 ' Proc : IncrementMajor
 ' Date : 9/4/2013
@@ -103,7 +113,8 @@ Sub CheckForUpdates(RepoName As String, LocalVer As String)
         If Not Ver = LocalVer Then
             Result = MsgBox("An update is available. Would you like to download the latest version now?", vbYesNo, "Update Available")
             If Result = vbYes Then
-                Shell "C:\Program Files\Internet Explorer\iexplore.exe http://github.com/Wesco/" & RepoName & "/releases/", vbMaximizedFocus
+                'Opens github release page in the default browser, maximised with focus by default
+                ShellExecute 0, "Open", "http://github.com/Wesco/" & RepoName & "/releases/"
                 ThisWorkbook.Saved = True
                 If Workbooks.Count = 1 Then
                     Application.Quit
