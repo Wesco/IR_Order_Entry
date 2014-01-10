@@ -5,7 +5,7 @@ Sub ImportMaster()
     Dim FileName As String
     Dim FilePath As String
 
-    FileName = "IR Master " & Format(Date, "yyyy") & " - New.xlsx"
+    FileName = "IR Master " & Format(Date, "yyyy") & ".xlsx"
     FilePath = "\\br3615gaps\gaps\IR\Master\"
 
     Workbooks.Open FilePath & FileName
