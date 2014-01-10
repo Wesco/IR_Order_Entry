@@ -19,7 +19,7 @@ Enum Errors
 End Enum
 
 'List of custom error messages
-Enum CustErr
+Enum CustErrLst
     COLNOTFOUND = 50000
     PONOTFOUND = 50001
 End Enum
@@ -341,6 +341,6 @@ Function FindColumn(ByVal HeaderText As String, Optional SearchArea As Range) As
         End If
     Next
 
-    If FindColumn = 0 Then Err.Raise CustErr.COLNOTFOUND, "FindColumn", HeaderText
+    If FindColumn = 0 Then Err.Raise CustErrLst.COLNOTFOUND, "FindColumn", HeaderText
 End Function
 
