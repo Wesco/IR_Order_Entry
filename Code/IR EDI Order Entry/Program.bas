@@ -24,7 +24,7 @@ Sub Main()
     FormatRemoved
     ExportRemoved
     ExportOrder
-
+    Clean
     MsgBox "Complete!"
 
     Sheets("Macro").Select
