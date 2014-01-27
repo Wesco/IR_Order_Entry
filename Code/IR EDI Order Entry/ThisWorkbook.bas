@@ -20,17 +20,6 @@ Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
 End Sub
 
 Private Sub Workbook_Open()
-    On Error GoTo UPDATE_ERROR
     CheckForUpdates RepositoryName, VersionNumber
-    On Error GoTo 0
-    Exit Sub
-
-UPDATE_ERROR:
-    If MsgBox("An error occured while checking for updates." & vbCrLf & vbCrLf & _
-              "Would you like to open the website to download the latest version?", vbYesNo) = vbYes Then
-        On Error Resume Next
-        Shell "C:\Program Files\Internet Explorer\iexplore.exe http://github.com/Wesco/IR_Order_Entry/releases/", vbMaximizedFocus
-        On Error GoTo 0
-    End If
 End Sub
 

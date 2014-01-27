@@ -95,22 +95,23 @@ End Sub
 ' Desc : Checks to see if the macro is up to date
 '---------------------------------------------------------------------------------------
 Sub CheckForUpdates(RepoName As String, LocalVer As String)
-    Dim Ver As Variant
+    Dim RemoteVer As Variant
     Dim RegEx As Variant
     Dim Result As Integer
 
+    On Error GoTo UPDATE_ERROR
     Set RegEx = CreateObject("VBScript.RegExp")
 
     'Try to get the contents of the text file
-    Ver = DownloadTextFile("https://raw.github.com/Wesco/" & RepoName & "/master/Version.txt")
-    Ver = Replace(Ver, vbLf, "")
-    Ver = Replace(Ver, vbCr, "")
+    RemoteVer = DownloadTextFile("https://raw.github.com/Wesco/" & RepoName & "/master/Version.txt")
+    RemoteVer = Replace(RemoteVer, vbLf, "")
+    RemoteVer = Replace(RemoteVer, vbCr, "")
 
     'Expression to verify the data retrieved is a version number
     RegEx.Pattern = "^[0-9]+\.[0-9]+\.[0-9]+$"
 
-    If RegEx.Test(Ver) Then
-        If Not Ver = LocalVer Then
+    If RegEx.Test(RemoteVer) Then
+        If Not RemoteVer = LocalVer Then
             Result = MsgBox("An update is available. Would you like to download the latest version now?", vbYesNo, "Update Available")
             If Result = vbYes Then
                 'Opens github release page in the default browser, maximised with focus by default
@@ -122,7 +123,19 @@ Sub CheckForUpdates(RepoName As String, LocalVer As String)
                     ThisWorkbook.Close
                 End If
             End If
+        End If
+    End If
+    On Error GoTo 0
+    Exit Sub
 
+UPDATE_ERROR:
+    If MsgBox("An error occured while checking for updates." & vbCrLf & vbCrLf & _
+              "Would you like to open the website to download the latest version?", vbYesNo) = vbYes Then
+        ShellExecute 0, "Open", "http://github.com/Wesco/" & RepoName & "/releases/"
+        If Workbooks.Count = 1 Then
+            Application.Quit
+        Else
+            ThisWorkbook.Close
         End If
     End If
 End Sub
@@ -153,4 +166,3 @@ Private Function DownloadTextFile(URL As String) As String
 
     DownloadTextFile = responseText
 End Function
-
